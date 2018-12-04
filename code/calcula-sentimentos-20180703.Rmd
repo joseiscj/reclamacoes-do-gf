@@ -54,6 +54,7 @@ palavras_com_sentimento = palavra_a_palavra %>%
 
 Agora, de fato, calculamos qual a polaridade acumulada (via somatorio) de cada reclamacao e salvamos em um csv.
 
+
 ```{r calcula_sentimentos}
 sentimentos = palavras_com_sentimento %>% 
     group_by(id) %>%
@@ -69,7 +70,19 @@ normalizacao <- function(p, pi) {
     round(pi- min(p))/((abs(max(p) - min(p)) / 4 ) + 1 )
 }
 
-#b <- apply(sentimentos["sentimento_op30_inv"], 0, normalizacao(sentimentos["sentimento_op30_inv"], pi))
+sentimentos["sentimento_op30_norm"] <- apply(sentimentos["sentimento_op30_inv"], 1, function(pi) normalizacao(sentimentos["sentimento_op30_inv"], pi))
+
+sentimentos["sentimento_sent_norm"] <- apply(sentimentos["sentimento_sent_inv"], 1, function(pi) normalizacao(sentimentos["sentimento_sent_inv"], pi))
+
+rmse <- function(m, o) {
+    sqrt(mean((m-o)^2))
+}
+
+a <- rmse(sentimentos["sentimento_op30_norm"], sentimentos["sentimento_op30"])
+a
+
+b <- rmse(sentimentos["sentimento_sent_norm"], sentimentos["sentimento_sent"])
+b
 
 sentimentos %>% 
     write_csv(here("data/4-estimativa-automatica/sentimento.csv"))
