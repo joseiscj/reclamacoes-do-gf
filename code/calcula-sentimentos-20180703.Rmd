@@ -54,6 +54,8 @@ palavras_com_sentimento = palavra_a_palavra %>%
 
 Agora, de fato, calculamos qual a polaridade acumulada (via somatorio) de cada reclamacao e salvamos em um csv.
 
+Abaixo, calculamos a polaridade invertida das variáveis "sentimento_op30" e "sentimento_sent". Os valores de cada elemento dos léxicos têm seu valor mudado, onde o valor é guardado nas novas colunas "sentimento_op30_inv" e "sentimento_sent_inv".
+Além disso, normalizamos as polaridades invertidas dos léxicos no intervalo [1,5] e, posteriormente, analisamos a qualidade do léxico usando o desvio quadrático médio do mesmo com a avaliação humana. 
 
 ```{r calcula_sentimentos}
 sentimentos = palavras_com_sentimento %>% 
