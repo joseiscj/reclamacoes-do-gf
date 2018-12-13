@@ -1,8 +1,6 @@
 ---
 title: "Analisa sentimentos das reclamacoes"
-output:
-  html_document:
-    df_print: paged
+output: html_notebook
 ---
 
 ```{r warning=FALSE}
@@ -56,9 +54,6 @@ palavras_com_sentimento = palavra_a_palavra %>%
 
 Agora, de fato, calculamos qual a polaridade acumulada (via somatorio) de cada reclamacao e salvamos em um csv.
 
-Abaixo, calculamos a polaridade invertida das variáveis "sentimento_op30" e "sentimento_sent". Os valores de cada elemento dos léxicos têm seu valor mudado, porquê a relação da polaridade invertida faz mais sentido ao nosso escopo pois quanto maior a polaridade invertida, mais insatisfeito está a pessoa com aquela reclamação. O valor das polaridades invertidas é guardado nas novas colunas "sentimento_op30_inv" e "sentimento_sent_inv".
-Além disso, normalizamos as polaridades invertidas dos léxicos no intervalo [1,5] e, posteriormente, analisamos a qualidade do léxico usando o desvio quadrático médio do mesmo com a avaliação humana. 
-
 ```{r calcula_sentimentos}
 sentimentos = palavras_com_sentimento %>% 
     group_by(id) %>%
@@ -71,7 +66,7 @@ sentimentos = palavras_com_sentimento %>%
 sentimentos["sentimento_op30_inv"] <- -sentimentos["sentimento_op30"]
 sentimentos["sentimento_sent_inv"] <- -sentimentos["sentimento_sent"]
 normalizacao <- function(p, pi) {
-    round(pi- min(p))/((abs(max(p) - min(p)) / 4 ) + 1 )
+    round(round(pi- min(p))/((abs(max(p) - min(p)) / 4 ) + 1 ))
 }
 
 sentimentos["sentimento_op30_norm"] <- apply(sentimentos["sentimento_op30_inv"], 1, function(pi) normalizacao(sentimentos["sentimento_op30_inv"], pi))
@@ -81,6 +76,12 @@ sentimentos["sentimento_sent_norm"] <- apply(sentimentos["sentimento_sent_inv"],
 rmse <- function(m, o) {
     sqrt(mean((m-o)^2))
 }
+
+avaliacoes <- read_csv(here("data/3-avaliacao-humana/avaliacoes-20181030.csv"))
+avaliacoes <- avaliacoes[order(avaliacoes$`ID da reclamação`),]
+avaliacoes
+
+#falta tirar a mediana
 
 a <- rmse(sentimentos["sentimento_op30_norm"], sentimentos["sentimento_op30"])
 a
